@@ -35,3 +35,7 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### About Private Keys Properties (Prod) ###
+src/main/resources/application-*.yaml
+AGENTS.md

@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>DEVOG - Github OAuth TEST</title>
+    <script src="https://code.jquery.com/jquery-4.0.0.js" integrity="sha256-9fsHeVnKBvqh3FB2HYu7g2xseAZ5MlN6Kz/qnkASV8U=" crossorigin="anonymous"></script>
+</head>
+
+<script>
+    function oauth_request() {
+        let link = document.createElement("a");
+        link.href="https://www.github.com/login/oauth/authorize";
+        link.href += "?client_id=Iv23liCL01TkBT4l2OTq"
+
+        document.querySelector("body").append(link);
+        link.click();
+        link.remove();
+    }
+</script>
+
+<body>
+    <div class="container unauthenticated">
+        With GitHub: <a href="/oauth2/authorization/github" >click here</a>
+        <!-- Spring Security Default URL Path @GetMapping("/oauth2/authorization/github") -->
+        <!-- Spring Security Default Callback URL : @GetMapping("/login/oauth2/code/github") -->
+    </div>
+    <div class="container authenticated" style="display:none">
+        Logged in as: <span id="user"></span>
+    </div>
+</body>
+</html>
