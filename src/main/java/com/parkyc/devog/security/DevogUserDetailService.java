@@ -1,7 +1,7 @@
 package com.parkyc.devog.security;
 
-import com.parkyc.devog.member.domain.entity.MemberAuth;
-import com.parkyc.devog.member.repository.MemberAuthRepository;
+import com.parkyc.devog.member.domain.entity.Member;
+import com.parkyc.devog.member.repository.MemberRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -14,12 +14,12 @@ import java.util.Optional;
 @Service
 public class DevogUserDetailService implements UserDetailsService {
 
-    private final MemberAuthRepository memberAuthRepository;
+    private final MemberRepository memberRepository;
 
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
 
-        Optional<MemberAuth> auth = memberAuthRepository.findByLoginId(username);
+        Optional<Member> auth = memberRepository.findByLoginId(username);
         if(auth.isEmpty()){
             throw new RuntimeException("CAN NOT FIND USER");
         }

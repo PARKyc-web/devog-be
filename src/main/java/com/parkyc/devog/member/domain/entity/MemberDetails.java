@@ -1,9 +1,6 @@
 package com.parkyc.devog.member.domain.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 
 @Builder
@@ -21,9 +18,8 @@ public class MemberDetails {
     @Column(name = "NICKNAME")
     private String nickname;
 
-    @Column(name = "KEY_GITHUB")
-    private String keyGithub;
-
-    @Column(name = "KEY_NOTION")
-    private String keyNotion;
+    @MapsId
+    @OneToOne
+    @JoinColumn(name = "MEMBER_ID")
+    private Member member;
 }

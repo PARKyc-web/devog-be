@@ -7,7 +7,6 @@ import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.test.web.servlet.MockMvc;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @SpringBootTest
@@ -23,9 +22,8 @@ class DevogBeApplicationTests {
 
     @Test
     void publicApiRequestsReachController() throws Exception {
-        mockMvc.perform(get("/api/lgn/oauth/git"))
-                .andExpect(status().isOk())
-                .andExpect(content().string("success"));
+        mockMvc.perform(get("/api/lgn/check/user"))
+                .andExpect(status().isOk());
     }
 
 }

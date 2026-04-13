@@ -25,9 +25,11 @@ public class LoginController {
         return new DevogUserDetails();
     }
 
-
     @GetMapping("/oauth/callback")
     public OAuth2User githubCallback(@AuthenticationPrincipal OAuth2User oAuth2User) {
+
+        /* Github */
+
 
         return oAuth2User;
     }
