@@ -16,8 +16,8 @@ import java.util.List;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private static List<String> WHITE_LIST = List.of(
-            "1",
-            "2",
+            "/page/**",
+            "/css/**",
             "3"
     );
 

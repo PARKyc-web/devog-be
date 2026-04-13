@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 @RequestMapping("/page")
 public class PageController {
 
-    @GetMapping("/github")
+    @GetMapping("/oauth")
     public String githubOAuthPage(){
         return "/github_oauth";
     }

@@ -20,13 +20,13 @@ public class LoginController {
 
     @PostMapping("/login")
     public DevogUserDetails login(LoginDTO.Request loginDTO) {
-        loginService.login(loginDTO);
+        // loginService.login(loginDTO);
 
         return new DevogUserDetails();
     }
 
 
-    @GetMapping("/oauth/git/callback")
+    @GetMapping("/oauth/callback")
     public OAuth2User githubCallback(@AuthenticationPrincipal OAuth2User oAuth2User) {
 
         return oAuth2User;

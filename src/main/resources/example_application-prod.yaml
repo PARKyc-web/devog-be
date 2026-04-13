@@ -1,0 +1,23 @@
+spring:
+  security:
+    oauth2:
+      client:
+        registration:
+          github:
+            clientId: client-id
+            clientSecret: client-secret
+            scope:
+              - read:user
+              - user:email
+          notion:
+
+
+
+token:
+  key: jjwt-secret-key-more-than-32bit-!@#$%^&*()
+  expire:
+    access: 10000000
+    refresh: 2520000000
+
+# application-prod have Secret Variables
+# Input Your Secret Variables

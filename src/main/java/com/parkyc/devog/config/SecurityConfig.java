@@ -39,7 +39,7 @@ public class SecurityConfig {
                     .anyRequest().authenticated()
             )
             .oauth2Login(oauth ->
-                    oauth.defaultSuccessUrl("/api/lgn/oauth/git/callback", true))
+                    oauth.defaultSuccessUrl("/api/lgn/oauth/callback", true))
             .addFilterBefore(testUserFilter, UsernamePasswordAuthenticationFilter.class);
 
 //        http

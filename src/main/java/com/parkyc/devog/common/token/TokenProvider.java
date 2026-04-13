@@ -84,9 +84,20 @@ public class TokenProvider {
                     .build();
         }
 
-        // loginid, isuuer, isuueAt(new Date()), status
+        Date now = new Date();
+        String access = Jwts.builder()
+                .signWith(secretKey)
+                .claim("id", claims.get("id"))
+                .issuer(claims.getIssuer())
+                .issuedAt(now)
+                .expiration(new Date(now.getTime() + accessExpire))
+                .compact();
 
-        return Response.builder().build();
+        return Response.builder()
+                .result(true)
+                .accessToken(access)
+                .refreshToken(refreshToken)
+                .build();
     }
 
     /**
@@ -103,10 +114,12 @@ public class TokenProvider {
                 .build();
 
         String access = Jwts.builder()
+                .signWith(secretKey)
                 .claims(claims)
                 .expiration(new Date(now.getTime() + accessExpire))
                 .compact();
         String refresh = Jwts.builder()
+                .signWith(secretKey)
                 .claims(claims)
                 .expiration(new Date(now.getTime() + refreshExpire))
                 .compact();
