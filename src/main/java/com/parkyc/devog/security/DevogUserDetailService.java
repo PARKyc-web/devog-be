@@ -21,9 +21,9 @@ public class DevogUserDetailService implements UserDetailsService {
 
         Optional<Member> auth = memberRepository.findByLoginId(username);
         if(auth.isEmpty()){
-            throw new RuntimeException("CAN NOT FIND USER");
+            throw new UsernameNotFoundException("CAN NOT FIND USER");
         }
 
-        return new DevogUserDetails();
+        return new DevogUserDetails(auth.get());
     }
 }

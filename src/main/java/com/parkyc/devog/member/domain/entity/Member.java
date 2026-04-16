@@ -12,7 +12,7 @@ import java.util.List;
 @Getter
 @Entity
 @Table(name="MEMBER",
-        indexes = @Index(name = "idx_login_id", columnList = "LOGIN_ID")
+        indexes = @Index(name = "idx_member_login_id", columnList = "LOGIN_ID")
 )
 public class Member {
 

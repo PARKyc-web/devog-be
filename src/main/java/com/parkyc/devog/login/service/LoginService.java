@@ -5,6 +5,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 public interface LoginService {
 
-    UserDetails login(LoginDTO.Request loginDTO);
+    LoginDTO.Response login(LoginDTO.Request loginDTO);
 
 }

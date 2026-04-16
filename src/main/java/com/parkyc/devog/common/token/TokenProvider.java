@@ -51,7 +51,7 @@ public class TokenProvider {
      */
     public Claims verifyToken(String token){
 
-        Claims claims = null;
+        Claims claims;
         try {
             claims = Jwts.parser()
                     .verifyWith(secretKey)

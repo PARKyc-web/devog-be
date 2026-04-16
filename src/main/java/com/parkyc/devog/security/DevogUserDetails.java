@@ -1,6 +1,7 @@
 package com.parkyc.devog.security;
 
 import com.parkyc.devog.common.code.MemberStatus;
+import com.parkyc.devog.member.domain.entity.Member;
 import lombok.Getter;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;
@@ -17,6 +18,14 @@ public class DevogUserDetails implements UserDetails {
     private final String nickname;
     private final MemberStatus status;
     private final Collection<? extends GrantedAuthority> authorities;
+
+    public DevogUserDetails(Member member){
+        this.loginId = member.getLoginId();
+        this.password = member.getPassword();
+        this.nickname = member.getDetails() == null ? null : member.getDetails().getNickname();
+        this.status = member.getStatus();
+        this.authorities = AuthorityUtils.createAuthorityList("ROLE_USER");
+    }
 
     public DevogUserDetails(){
         this.loginId = "TEST-USER";
