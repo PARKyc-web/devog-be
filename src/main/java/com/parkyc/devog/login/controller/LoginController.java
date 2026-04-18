@@ -1,8 +1,14 @@
 package com.parkyc.devog.login.controller;
 
+import com.parkyc.devog.common.CookieProvider;
+import com.parkyc.devog.common.HeaderProvider;
+import com.parkyc.devog.common.code.ResponseCode;
+import com.parkyc.devog.common.dto.CommonDTO;
 import com.parkyc.devog.login.domain.dto.LoginDTO;
 import com.parkyc.devog.login.service.LoginService;
 import com.parkyc.devog.security.DevogUserDetails;
+import io.jsonwebtoken.Header;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -13,12 +19,8 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
 import org.springframework.security.oauth2.client.annotation.RegisteredOAuth2AuthorizedClient;
 import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
-import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,36 +31,23 @@ public class LoginController {
 
     private final LoginService loginService;
 
-    @Value("${token.expire.refresh}")
-    private long refreshExpired;
+    private final HeaderProvider headerProvider;
+    private final CookieProvider cookieProvider;
 
-    @PostMapping("/web/login")
-    public LoginDTO.Response webLogin(HttpServletResponse response, LoginDTO.Request loginDTO) {
+    @PostMapping("/login")
+    public CommonDTO.Response<LoginDTO.Response> webLogin(HttpServletRequest request,
+                                                          HttpServletResponse response,
+                                                          @RequestBody LoginDTO.Request loginDTO) {
         LoginDTO.Response result = loginService.login(loginDTO);
+        if(headerProvider.isAppPlatform(request)){
+            return new CommonDTO.Response<>(ResponseCode.API_SUCCESS, result);
+        }
 
-        ResponseCookie cookie = ResponseCookie.from("refresh-token", result.getRefreshToken())
-                .httpOnly(true)
-                .secure(true)
-                .sameSite("None")
-                .path("/")
-                .maxAge(Duration.ofMillis(refreshExpired).minusSeconds(10))
-                .build();
+        ResponseCookie cookie = cookieProvider.getRefreshCookie(result);
         response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
-        // Token 만료시간 보다 10초 정도 짧게 설정 > Token이 만료되었는데 쿠키에 남아있는 것을 방지
 
-        return LoginDTO.Response.builder()
-                .loginId(result.getLoginId())
-                .accessToken(result.getAccessToken())
-                .build();
-    }
-
-    @PostMapping("/app/login")
-    public LoginDTO.Response appLogin(LoginDTO.Request loginDTO) {
-        LoginDTO.Response result = loginService.login(loginDTO);
-
-        // app의 경우 DTO로 내려주고 front에서 관리한다.
-
-        return result;
+        result.setRefreshToken(null);
+        return new CommonDTO.Response<>(ResponseCode.API_SUCCESS, result);
     }
 
     @GetMapping("/oauth/callback")

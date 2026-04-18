@@ -24,7 +24,7 @@ public class CommonDTO {
             this.data = data;
         }
 
-        public ResponseEntity<Response<T>> toEntity() {
+        public ResponseEntity<Response<T>> toResponseEntity() {
             return ResponseEntity.status(code.getStatus()).body(this);
         }
     }

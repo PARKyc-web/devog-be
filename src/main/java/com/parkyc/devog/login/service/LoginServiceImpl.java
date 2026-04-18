@@ -1,11 +1,14 @@
 package com.parkyc.devog.login.service;
 
+import com.parkyc.devog.common.code.ResponseCode;
 import com.parkyc.devog.common.token.TokenProvider;
+import com.parkyc.devog.config.exception.DevogApiException;
 import com.parkyc.devog.login.domain.dto.LoginDTO;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 @RequiredArgsConstructor
@@ -18,12 +21,23 @@ public class LoginServiceImpl implements LoginService {
     @Override
     public LoginDTO.Response login(LoginDTO.Request loginDTO) {
 
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        loginDTO.getLoginId(),
-                        loginDTO.getPassword()
-                )
-        );
+        Authentication authentication;
+        try{
+            authentication = authenticationManager.authenticate(
+                    new UsernamePasswordAuthenticationToken(
+                            loginDTO.getLoginId(),
+                            loginDTO.getPassword()
+                    )
+            );
+        } catch (BadCredentialsException | UsernameNotFoundException e) {
+            throw new DevogApiException(ResponseCode.LOGIN_INVALID_CREDENTIALS);
+        } catch (DisabledException e) {
+            throw new DevogApiException(ResponseCode.API_ERROR);
+        } catch (LockedException e) {
+            throw new DevogApiException(ResponseCode.API_ERROR);
+        } catch (AuthenticationException e) {
+            throw new DevogApiException(ResponseCode.API_ERROR);
+        }
 
         TokenProvider.Response token = tokenProvider.renewLoginToken(authentication.getName());
 

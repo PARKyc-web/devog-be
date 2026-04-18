@@ -9,8 +9,11 @@ public enum ResponseCode {
     /* Basic Response Code */
     API_SUCCESS(HttpStatus.OK, "Success API"),
     API_FAIL(HttpStatus.OK, "Fail API"),
-    API_WRONG_INPUT(HttpStatus.OK,"Fail API - Wrong Input"),
-    API_ERROR(HttpStatus.OK,"Fail API - Error Occur"),
+    API_ERROR(HttpStatus.INTERNAL_SERVER_ERROR,"Fail API - Error Occur"),
+
+    /* Member Response Code */
+    DUPLICATE_LOGIN_ID(HttpStatus.OK, "Login Id is Already Used"),
+    SUCCESS_SIGN_UP(HttpStatus.OK, "Success to sign-up, Redirect Details Inputs"),
 
     /* Login Response Code */
     WRONG_INPUT(HttpStatus.OK, "Please Input Correct ID or Password"),
