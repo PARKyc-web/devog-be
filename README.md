@@ -16,6 +16,7 @@
 > 1. Github OAuth 연동
 
 ## 작업예정
+> 0. 공통 응답 DTO 필요, message, result가 포함된
 > 1. Github 활동내역 가져옴
 > 2. Github AccessToken 정보 저장
 > 3. Github Repository 목록

@@ -12,4 +12,10 @@ public class MemberDTO {
         private String password;
     }
 
+    @Data
+    @Builder
+    public static class Details {
+        private String nickname;
+    }
+
 }

@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,9 +41,10 @@ public class LoginController {
                 .secure(true)
                 .sameSite("None")
                 .path("/")
-                .maxAge(refreshExpired)
+                .maxAge(Duration.ofMillis(refreshExpired).minusSeconds(10))
                 .build();
-        response.addHeader(HttpHeaders.COOKIE, cookie.toString());
+        response.addHeader(HttpHeaders.SET_COOKIE, cookie.toString());
+        // Token 만료시간 보다 10초 정도 짧게 설정 > Token이 만료되었는데 쿠키에 남아있는 것을 방지
 
         return LoginDTO.Response.builder()
                 .loginId(result.getLoginId())
