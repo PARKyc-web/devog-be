@@ -1,13 +1,13 @@
-package com.parkyc.devog.common.token;
+package com.parkyc.devog.token.provider;
 
-import com.parkyc.devog.security.DevogUserDetailService;
+import com.parkyc.devog.token.exception.TokenErrorCode;
+import com.parkyc.devog.token.exception.TokenException;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import lombok.Builder;
 import lombok.Data;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -61,10 +61,10 @@ public class TokenProvider {
 
         } catch (ExpiredJwtException e) {
             log.error("Token is Expired", e);
-            return null;
+            throw new TokenException(TokenErrorCode.TOKEN_EXPIRED);
         } catch (Exception e){
             log.error("Token is Something Wrong", e);
-            return null;
+            throw new TokenException(TokenErrorCode.TOKEN_BUSINESS_ERROR);
         }
 
         return claims;

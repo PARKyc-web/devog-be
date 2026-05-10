@@ -1,8 +1,8 @@
 package com.parkyc.devog.login.service;
 
 import com.parkyc.devog.common.code.ResponseCode;
-import com.parkyc.devog.common.token.TokenProvider;
-import com.parkyc.devog.config.exception.DevogApiException;
+import com.parkyc.devog.token.provider.TokenProvider;
+import com.parkyc.devog.common.exception.DevogApiException;
 import com.parkyc.devog.login.domain.dto.LoginDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.*;

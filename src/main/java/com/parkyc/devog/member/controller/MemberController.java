@@ -73,4 +73,7 @@ public class MemberController {
 
         return "";
     }
+
+    public void linkGithubData(){
+    }
 }

@@ -2,7 +2,7 @@ package com.parkyc.devog.config.http;
 
 import com.parkyc.devog.common.code.ResponseCode;
 import com.parkyc.devog.common.dto.CommonDTO;
-import com.parkyc.devog.config.exception.DevogApiException;
+import com.parkyc.devog.common.exception.DevogApiException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
