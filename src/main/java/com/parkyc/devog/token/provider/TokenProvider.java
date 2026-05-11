@@ -1,13 +1,12 @@
 package com.parkyc.devog.token.provider;
 
+import com.parkyc.devog.token.dto.TokenClaims;
+import com.parkyc.devog.token.dto.TokenType;
 import com.parkyc.devog.token.exception.TokenErrorCode;
 import com.parkyc.devog.token.exception.TokenException;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
-import lombok.Builder;
-import lombok.Data;
+import io.jsonwebtoken.security.SignatureException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -15,21 +14,11 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.List;
 
 @Slf4j
 @Component
 public class TokenProvider {
-
-    /**
-     *  Token 결과 반환 클래스
-     */
-    @Data
-    @Builder
-    public static class Response {
-        private boolean result;
-        private String accessToken;
-        private String refreshToken;
-    }
 
     private final SecretKey secretKey;
     private final long accessExpire;
@@ -49,7 +38,7 @@ public class TokenProvider {
      * @param token
      * @return
      */
-    public Claims verifyToken(String token){
+    public TokenClaims verifyToken(String token){
 
         Claims claims;
         try {
@@ -59,76 +48,61 @@ public class TokenProvider {
                     .parseSignedClaims(token)
                     .getPayload();
 
+        } catch (MalformedJwtException e) {
+            log.info(e.getMessage(), e);
+            throw new TokenException(TokenErrorCode.ILLEGAL_ARGUMENT_TOKEN);
+        } catch (SignatureException e) {
+            log.info(e.getMessage(), e);
+            throw new TokenException(TokenErrorCode.ILLEGAL_ARGUMENT_TOKEN);
+        } catch(UnsupportedJwtException e) {
+            log.info(e.getMessage(), e);
+            throw new TokenException(TokenErrorCode.UNSUPPORTED_TOKEN_TYPE);
         } catch (ExpiredJwtException e) {
-            log.error("Token is Expired", e);
+            log.info(e.getMessage(), e);
             throw new TokenException(TokenErrorCode.TOKEN_EXPIRED);
         } catch (Exception e){
-            log.error("Token is Something Wrong", e);
+            log.error(e.getMessage(), e);
             throw new TokenException(TokenErrorCode.TOKEN_BUSINESS_ERROR);
         }
 
-        return claims;
+        return toRecord(claims);
     }
 
     /**
-     * RefreshToken을 사용해, AccessToken 재발급
-     * @param refreshToken
-     * @return
+     * Access/Refresh Token 발급
+     * @param data
+     * @param type
+     * @return String
      */
-    public Response renewAccessToken(String refreshToken){
-
-        Claims claims = verifyToken(refreshToken);
-        if(claims == null){
-            return Response.builder()
-                    .result(false)
-                    .build();
-        }
-
+    public String issueToken(TokenClaims data, TokenType type){
         Date now = new Date();
-        String access = Jwts.builder()
+        return Jwts.builder()
                 .signWith(secretKey)
-                .claim("id", claims.get("id"))
-                .issuer(claims.getIssuer())
+                .issuer("DEVOG Application")
                 .issuedAt(now)
-                .expiration(new Date(now.getTime() + accessExpire))
+                .expiration(new Date(now.getTime() +
+                        (type == TokenType.ACCESS ? accessExpire : refreshExpire)))
+                .claims(toClaims(data))
                 .compact();
-
-        return Response.builder()
-                .result(true)
-                .accessToken(access)
-                .refreshToken(refreshToken)
-                .build();
     }
 
     /**
-     * 로그인 시, Access/Refresh Token 발급
-     * @return
+     * TokenClaims를 Claims로 컨버팅 (Record to Claims)
+     * @param data
+     * @return Claims
      */
-    public Response renewLoginToken(String loginId){
-
-        Date now = new Date();
-        Claims claims = Jwts.claims()
-                .issuer("DEVOG")
-                .issuedAt(now)
-                .add("id", loginId)
+    private Claims toClaims(TokenClaims data){
+        return Jwts.claims()
+                .add("LOGIN_ID", data.loginId())
+                .add("USER_ROLE", data.role())
                 .build();
+    }
 
-        String access = Jwts.builder()
-                .signWith(secretKey)
-                .claims(claims)
-                .expiration(new Date(now.getTime() + accessExpire))
-                .compact();
-        String refresh = Jwts.builder()
-                .signWith(secretKey)
-                .claims(claims)
-                .expiration(new Date(now.getTime() + refreshExpire))
-                .compact();
-
-        return Response.builder()
-                .result(true)
-                .accessToken(access)
-                .refreshToken(refresh)
-                .build();
+    private TokenClaims toRecord(Claims claims){
+        return new TokenClaims(
+                claims.get("LOGIN_ID", String.class),
+                (List<String>) claims.get("USER_ROLE")
+        );
     }
 
 }

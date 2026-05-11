@@ -1,9 +1,11 @@
 package com.parkyc.devog.login.service;
 
 import com.parkyc.devog.common.code.ResponseCode;
+import com.parkyc.devog.token.dto.TokenInfo;
 import com.parkyc.devog.token.provider.TokenProvider;
 import com.parkyc.devog.common.exception.DevogApiException;
 import com.parkyc.devog.login.domain.dto.LoginDTO;
+import com.parkyc.devog.token.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.*;
 import org.springframework.security.core.Authentication;
@@ -15,8 +17,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class LoginServiceImpl implements LoginService {
 
-    private final TokenProvider tokenProvider;
     private final AuthenticationManager authenticationManager;
+
+    private final TokenService tokenService;
 
     @Override
     public LoginDTO.Response login(LoginDTO.Request loginDTO) {
@@ -39,12 +42,13 @@ public class LoginServiceImpl implements LoginService {
             throw new DevogApiException(ResponseCode.API_ERROR);
         }
 
-        TokenProvider.Response token = tokenProvider.renewLoginToken(authentication.getName());
+        // TokenInfo token = tokenProvider.renewLoginToken(authentication.getName());
+        TokenInfo token = tokenService.issueLoginToken();
 
         return LoginDTO.Response.builder()
                 .loginId(authentication.getName())
-                .accessToken(token.getAccessToken())
-                .refreshToken(token.getRefreshToken())
+                .accessToken(token.accessToken())
+                .refreshToken(token.refreshToken())
                 .build();
     }
 }
