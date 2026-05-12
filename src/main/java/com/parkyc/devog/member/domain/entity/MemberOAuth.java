@@ -1,70 +1,64 @@
 package com.parkyc.devog.member.domain.entity;
 
+
 import com.parkyc.devog.common.code.OAuthProvider;
 import jakarta.persistence.*;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 
-@Builder
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Getter
+@EntityListeners(AuditingEntityListener.class)
 @Entity
-@Table(name = "MEMBER_OAUTH",
-        indexes = {
-                @Index(name = "idx_oauth_member_id", columnList = "MEMBER_ID"),
-                @Index(name = "idx_oauth_provider_user_id", columnList = "PROVIDER, PROVIDER_USER_ID")
-        },
-        uniqueConstraints = {
-                @UniqueConstraint(name = "uk_oauth_provider_user", columnNames = {"PROVIDER", "PROVIDER_USER_ID"}),
-                @UniqueConstraint(name = "uk_oauth_member_provider", columnNames = {"MEMBER_ID", "PROVIDER"})
-        }
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(
+        name = "member_oauth"
 )
 public class MemberOAuth {
 
     @Id
-    @Column(name = "OAUTH_ID")
-    @SequenceGenerator(name = "OAUTH_ID_GENERATOR", sequenceName = "SEQ_MEMBER_OAUTH_ID"
-            , initialValue = 1, allocationSize = 1)
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "OAUTH_ID_GENERATOR")
+    @Column(name = "oauth_id")
+    @SequenceGenerator(
+            name = "generator_oauth_id", sequenceName = "seq_oauth",
+            allocationSize = 1, initialValue = 1
+    )
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "generator_oauth_id")
     private Long oauthId;
 
-    @Column(name = "PROVIDER", nullable = false)
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "member_id")
+    private Member member;
+
+    @Column(name = "provider")
     @Enumerated(EnumType.STRING)
     private OAuthProvider provider;
 
-    @Column(name = "PROVIDER_USER_ID", nullable = false)
-    private String providerUserId;
+    @Column(name = "token")
+    private String token;
 
-    @Column(name = "PROVIDER_LOGIN")
-    private String providerLogin;
+    @Column(name = "created_at")
+    @CreatedDate
+    private LocalDateTime createdAt;
 
-    @Column(name = "PROVIDER_EMAIL")
-    private String providerEmail;
+    @Column(name = "updated_at")
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
 
-    @Column(name = "ACCESS_TOKEN", length = 2048)
-    private String accessToken;
+    // 정적 팩토리 메소드
+    public static MemberOAuth of(OAuthProvider provider, String token){
+        MemberOAuth oAuth = new MemberOAuth();
+        oAuth.provider = provider;
+        oAuth.token = token;
 
-    @Column(name = "REFRESH_TOKEN", length = 2048)
-    private String refreshToken;
+        return oAuth;
+    }
 
-    @Column(name = "TOKEN_TYPE")
-    private String tokenType;
-
-    @Column(name = "SCOPE", length = 1024)
-    private String scope;
-
-    @Column(name = "EXPIRES_AT")
-    private LocalDateTime expiresAt;
-
-    @Column(name = "CONNECTED_AT")
-    private LocalDateTime connectedAt;
-
-    @Column(name = "REVOKED_AT")
-    private LocalDateTime revokedAt;
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "MEMBER_ID", nullable = false)
-    private Member member;
+    public void assignMember(Member member){
+        this.member = member;
+    }
 }

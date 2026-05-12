@@ -3,16 +3,23 @@ package com.parkyc.devog.member.domain.entity;
 import com.parkyc.devog.common.code.MemberStatus;
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.Fetch;
+import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.annotation.LastModifiedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
-@Builder
-@NoArgsConstructor(access = AccessLevel.PROTECTED)
-@AllArgsConstructor
-@Getter
+
+@EntityListeners(AuditingEntityListener.class)
 @Entity
-@Table(name="MEMBER",
-        indexes = @Index(name = "idx_member_login_id", columnList = "LOGIN_ID")
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(
+        name = "MEMBER",
+        indexes = @Index(name = "idx_member_created_at", columnList = "created_at DESC")
 )
 public class Member {
 
@@ -33,20 +40,39 @@ public class Member {
     @Enumerated(EnumType.STRING)
     private MemberStatus status;
 
-/* 연동 여부는 MEMBER_OAUTH 테이블의 row 존재 여부로 체크 */
-//    @Column(name = "AUTH_GITHUB")
-//    private boolean authGithub;
-//
-//    @Column(name = "AUTH_NOTION")
-//    private boolean authNotion;
-//
-//    @Column(name = "AUTH_GOOGLE")
-//    private boolean authGoogle;
+    @Column(name="nickname")
+    private String nickname;
 
-    @OneToOne(mappedBy = "member")
-    private MemberDetails details;
+    @Column
+    @CreatedDate
+    private LocalDateTime createdAt;
 
-    @OneToMany(mappedBy = "member")
-    private List<MemberOAuth> oauths;
+    @Column
+    @LastModifiedDate
+    private LocalDateTime updatedAt;
+
+    @OneToMany(mappedBy = "member", fetch = FetchType.LAZY,
+            cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<MemberOAuth> oauths = new ArrayList<>();
+
+
+    public static Member signup(
+            String loginId,
+            String password,
+            String nickname
+    ){
+        Member member = new Member();
+        member.loginId = loginId;
+        member.password = password;
+        member.status = MemberStatus.NOT_VERIFIED;
+        member.nickname = nickname;
+
+        return member;
+    }
+
+    public void connectOauth(MemberOAuth oAuth){
+        this.oauths.add(oAuth);
+        oAuth.assignMember(this);
+    }
 }
 
