@@ -1,9 +1,8 @@
 package com.parkyc.devog.member.domain.entity;
 
-import com.parkyc.devog.common.code.MemberStatus;
+import com.parkyc.devog.member.domain.MemberStatus;
 import jakarta.persistence.*;
 import lombok.*;
-import org.hibernate.annotations.Fetch;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
@@ -64,7 +63,7 @@ public class Member {
         Member member = new Member();
         member.loginId = loginId;
         member.password = password;
-        member.status = MemberStatus.NOT_VERIFIED;
+        member.status = MemberStatus.ACTIVE;
         member.nickname = nickname;
 
         return member;

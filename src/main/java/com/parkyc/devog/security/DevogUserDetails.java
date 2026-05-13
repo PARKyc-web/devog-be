@@ -1,7 +1,6 @@
 package com.parkyc.devog.security;
 
-import com.parkyc.devog.common.code.MemberStatus;
-import com.parkyc.devog.member.domain.entity.Member;
+import com.parkyc.devog.member.domain.MemberStatus;
 import lombok.Getter;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.core.GrantedAuthority;

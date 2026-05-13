@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 
 public enum MemberErrorCode implements BaseErrorCode {
 
+    ALREADY_USED_ID(HttpStatus.BAD_REQUEST, "이미 사용중인 ID 입니다."),
     ERROR(HttpStatus.OK, "SUCCESS TO API");
 
     private final HttpStatus status;
@@ -17,11 +18,11 @@ public enum MemberErrorCode implements BaseErrorCode {
 
     @Override
     public HttpStatus getStatus() {
-        return null;
+        return this.status;
     }
 
     @Override
     public String getMessage() {
-        return "";
+        return this.message;
     }
 }
