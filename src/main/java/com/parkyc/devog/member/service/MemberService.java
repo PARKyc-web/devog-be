@@ -8,13 +8,9 @@ import com.parkyc.devog.member.repository.MemberRepository;
 import com.parkyc.devog.member.service.command.SignUpCommand;
 import com.parkyc.devog.member.service.result.SignUpResult;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.Date;
 
 @Service
 @RequiredArgsConstructor
@@ -37,7 +33,7 @@ public class MemberService {
                 encodePassword,
                 command.nickname());
 
-        memberRepository.saveAndFlush(member);
+        memberRepository.save(member);
 
         return new SignUpResult(member.getMemberId(),
                 member.getLoginId(),

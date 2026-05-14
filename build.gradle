@@ -36,15 +36,12 @@ dependencies {
     runtimeOnly 'io.jsonwebtoken:jjwt-impl:0.13.0'
     runtimeOnly 'io.jsonwebtoken:jjwt-jackson:0.13.0'
 
-    // PageController를 위한 Dependency >> 추후 삭제
-    implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
-
     // Lombok
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
     // PostgreSQL
-    runtimeOnly 'org.postgresql:postgresql'
+    // runtimeOnly 'org.postgresql:postgresql'
     runtimeOnly 'com.h2database:h2'
 
     /// Test Dependency
