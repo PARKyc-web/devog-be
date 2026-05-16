@@ -38,3 +38,4 @@ out/
 
 ### About Private Keys Properties (Prod) ###
 src/main/resources/application-*.yaml
+data

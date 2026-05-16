@@ -12,6 +12,7 @@ import com.parkyc.devog.token.dto.TokenClaims;
 import com.parkyc.devog.token.dto.TokenType;
 import com.parkyc.devog.token.provider.TokenProvider;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -28,11 +29,8 @@ public class LoginService {
     private final TokenProvider tokenProvider;
 
     public LoginResult login(LoginCommand command){
-
-        Member member = memberRepository.findByLoginId(command.loginId())
-                .orElseThrow(() -> new LoginException(LoginErrorCode.NO_EXISTS_MEMBER));
-
-        // 로그인 값 비교
+        // Spring Security를 사용해서 로그인 검증
+        // 실패 시, new LoginException(LoginErrorCode.INVALID_LOGIN_ID)
         Authentication auth = authManager.authenticate(
                 new UsernamePasswordAuthenticationToken(
                         command.loginId(),

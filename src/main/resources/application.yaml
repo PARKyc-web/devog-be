@@ -18,7 +18,7 @@ spring:
 
   # Use Local H2 Database
   datasource:
-    url: jdbc:h2:mem:devog;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH
+    url: jdbc:h2:file:./data/devog;MODE=PostgreSQL;DATABASE_TO_LOWER=TRUE;DEFAULT_NULL_ORDERING=HIGH;AUTO_SERVER=TRUE
     username: sa
     password:
     driver-class-name: org.h2.Driver
