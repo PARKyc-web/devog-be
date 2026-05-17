@@ -4,9 +4,9 @@ import com.parkyc.devog.login.service.command.LoginCommand;
 import com.parkyc.devog.login.service.result.LoginResult;
 import com.parkyc.devog.member.repository.MemberRepository;
 import com.parkyc.devog.security.DevogUserDetails;
-import com.parkyc.devog.token.dto.TokenClaims;
-import com.parkyc.devog.token.dto.TokenType;
-import com.parkyc.devog.token.provider.TokenProvider;
+import com.parkyc.devog.token.dto.LoginClaim;
+import com.parkyc.devog.token.dto.LoginToken;
+import com.parkyc.devog.token.service.TokenService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -19,7 +19,7 @@ public class LoginService {
 
     private final MemberRepository memberRepository;
     private final AuthenticationManager authManager;
-    private final TokenProvider tokenProvider;
+    private final TokenService tokenService;
 
     public LoginResult login(LoginCommand command){
         // Spring Security를 사용해서 로그인 검증
@@ -32,17 +32,11 @@ public class LoginService {
         );
         DevogUserDetails detail = (DevogUserDetails) auth.getPrincipal();
 
-        // token 발급
-        String aToken = tokenProvider.issueToken(
-                new TokenClaims(detail.getLoginId(), null),
-                TokenType.ACCESS
-        );
-        String rToken = tokenProvider.issueToken(
-                new TokenClaims(detail.getLoginId(), null),
-                TokenType.REFRESH
+        LoginToken token = tokenService.issueLoginToken(
+                new LoginClaim(detail.getLoginId(), null)
         );
 
-        return new LoginResult(detail.getLoginId(), aToken, rToken);
+        return new LoginResult(detail.getLoginId(), token);
     }
 
 

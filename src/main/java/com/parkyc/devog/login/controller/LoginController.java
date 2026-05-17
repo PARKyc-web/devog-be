@@ -3,8 +3,11 @@ package com.parkyc.devog.login.controller;
 import com.parkyc.devog.common.response.ApiResponse;
 import com.parkyc.devog.login.controller.request.LoginRequest;
 import com.parkyc.devog.login.controller.response.LoginResponse;
+import com.parkyc.devog.login.controller.response.LoginResponseWriter;
 import com.parkyc.devog.login.service.LoginService;
 import com.parkyc.devog.login.service.result.LoginResult;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -18,19 +21,25 @@ import org.springframework.web.bind.annotation.RestController;
 public class LoginController {
 
     private final LoginService loginService;
+    private final LoginResponseWriter writer;
 
     // 자체 회원가입 계정으로 로그인한다.
     @PostMapping("")
-    public ApiResponse<LoginResponse>  login(@Valid @RequestBody LoginRequest request){
-        LoginResult result = loginService.login(request.toCommand());
+    public ApiResponse<LoginResponse>  login(@Valid @RequestBody LoginRequest login,
+                                             HttpServletRequest request,
+                                             HttpServletResponse response){
+        LoginResult result = loginService.login(login.toCommand());
 
-        // web, app 구분
-
+        return ApiResponse.ok(
+                writer.write(request, response, result)
+        );
+        /*
         return ApiResponse.ok(
                 new LoginResponse(result.loginId(),
                 result.accessToken(),
                 result.refreshToken())
         );
+        */
     }
 
     @PostMapping("/github")

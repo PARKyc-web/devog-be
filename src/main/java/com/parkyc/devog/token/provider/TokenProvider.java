@@ -1,7 +1,9 @@
 package com.parkyc.devog.token.provider;
 
-import com.parkyc.devog.token.dto.TokenClaims;
-import com.parkyc.devog.token.dto.TokenType;
+import com.parkyc.devog.token.dto.LoginClaim;
+import com.parkyc.devog.token.dto.TokenClaim;
+import com.parkyc.devog.token.dto.TokenResult;
+import com.parkyc.devog.token.code.TokenType;
 import com.parkyc.devog.token.exception.TokenErrorCode;
 import com.parkyc.devog.token.exception.TokenException;
 import io.jsonwebtoken.*;
@@ -14,7 +16,9 @@ import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Slf4j
 @Component
@@ -38,7 +42,7 @@ public class TokenProvider {
      * @param token
      * @return
      */
-    public TokenClaims verifyToken(String token){
+    public TokenClaim verifyToken(String token){
 
         Claims claims;
         try {
@@ -72,46 +76,46 @@ public class TokenProvider {
      * Access/Refresh Token 발급
      * @param data
      * @param type
-     * @return String
+     * @return TokenResult
      */
-    public String issueToken(TokenClaims data, TokenType type){
+    public TokenResult issueToken(TokenClaim data, TokenType type){
         Date now = new Date();
-        return Jwts.builder()
+        Date expire = new Date(now.getTime() + (type == TokenType.ACCESS ? accessExpire : refreshExpire));
+
+        String token = Jwts.builder()
                 .signWith(secretKey)
                 .issuer("DEVOG Application")
                 .issuedAt(now)
-                .expiration(new Date(now.getTime() +
-                        (type == TokenType.ACCESS ? accessExpire : refreshExpire)))
+                .expiration(expire)
                 .claims(toClaims(data))
                 .compact();
+
+        return new TokenResult(token, expire.toInstant());
     }
 
     /**
-     * Refresh-Token을 사용해서 Access-Token 재발급
-     * @param refreshToken
-     * @return String
-     */
-    public String renewAccessToken(String refreshToken){
-        return "";
-    }
-
-    /**
-     * TokenClaims를 Claims로 컨버팅 (Record to Claims)
+     * TokenClaims(Record)를 Claims로 컨버팅 (Record to Claims)
      * @param data
      * @return Claims
      */
-    private Claims toClaims(TokenClaims data){
+    private Claims toClaims(TokenClaim data){
         return Jwts.claims()
-                .add("LOGIN_ID", data.loginId())
-                .add("USER_ROLE", data.role())
+                .add(data.map())
                 .build();
     }
 
-    private TokenClaims toRecord(Claims claims){
-        return new TokenClaims(
-                claims.get("LOGIN_ID", String.class),
-                (List<String>) claims.get("USER_ROLE")
-        );
+    /**
+     * Claims를 TokenClaim(Record)로 컨버팅 (Claims to Record)
+     * @param claims
+     * @return TokenClaim
+     */
+    private TokenClaim toRecord(Claims claims){
+        Map<String, Object> map = new HashMap<>();
+        for(String key : claims.keySet()){
+            map.put(key, claims.get(key));
+        }
+
+        return new TokenClaim(map);
     }
 
 }
