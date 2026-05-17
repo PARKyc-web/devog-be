@@ -37,7 +37,6 @@ public class MemberService {
 
         return new SignUpResult(member.getMemberId(),
                 member.getLoginId(),
-                member.getPassword(),
                 member.getNickname(),
                 member.getStatus(),
                 member.getCreatedAt(),

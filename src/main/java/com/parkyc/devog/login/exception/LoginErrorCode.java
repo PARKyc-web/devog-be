@@ -1,8 +1,10 @@
 package com.parkyc.devog.login.exception;
 
 import com.parkyc.devog.common.exception.BaseErrorCode;
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
+@Getter
 public enum LoginErrorCode implements BaseErrorCode {
 
     INVALID_LOGIN_ID(HttpStatus.BAD_REQUEST, "로그인 정보가 잘못되었습니다. ID/PW를 확인해주세요!"),
@@ -14,15 +16,5 @@ public enum LoginErrorCode implements BaseErrorCode {
     LoginErrorCode(HttpStatus status, String message){
         this.status = status;
         this.message = message;
-    }
-
-    @Override
-    public HttpStatus getStatus() {
-        return null;
-    }
-
-    @Override
-    public String getMessage() {
-        return "";
     }
 }

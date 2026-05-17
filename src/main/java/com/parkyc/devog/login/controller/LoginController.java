@@ -24,6 +24,8 @@ public class LoginController {
     public ApiResponse<LoginResponse>  login(@Valid @RequestBody LoginRequest request){
         LoginResult result = loginService.login(request.toCommand());
 
+        // web, app 구분
+
         return ApiResponse.ok(
                 new LoginResponse(result.loginId(),
                 result.accessToken(),

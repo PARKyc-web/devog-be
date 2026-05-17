@@ -1,13 +1,13 @@
 package com.parkyc.devog.login.exception;
 
 import com.parkyc.devog.common.exception.BaseErrorCode;
+import com.parkyc.devog.common.exception.DevogApiException;
+import lombok.Getter;
 
-public class LoginException extends RuntimeException {
-
-    private final BaseErrorCode errorCode;
+@Getter
+public class LoginException extends DevogApiException {
 
     public LoginException(LoginErrorCode errorCode) {
-        super(errorCode.getMessage());
-        this.errorCode = errorCode;
+        super(errorCode);
     }
 }

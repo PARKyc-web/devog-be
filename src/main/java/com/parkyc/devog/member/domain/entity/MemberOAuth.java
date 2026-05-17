@@ -1,7 +1,7 @@
 package com.parkyc.devog.member.domain.entity;
 
 
-import com.parkyc.devog.common.code.OAuthProvider;
+import com.parkyc.devog.member.domain.code.OAuthType;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -34,9 +34,9 @@ public class MemberOAuth {
     @JoinColumn(name = "member_id")
     private Member member;
 
-    @Column(name = "provider")
+    @Column(name = "oauth_type")
     @Enumerated(EnumType.STRING)
-    private OAuthProvider provider;
+    private OAuthType oAuthType;
 
     @Column(name = "token")
     private String token;
@@ -50,9 +50,9 @@ public class MemberOAuth {
     private LocalDateTime updatedAt;
 
     // 정적 팩토리 메소드
-    public static MemberOAuth of(OAuthProvider provider, String token){
+    public static MemberOAuth of(OAuthType type, String token){
         MemberOAuth oAuth = new MemberOAuth();
-        oAuth.provider = provider;
+        oAuth.oAuthType = type;
         oAuth.token = token;
 
         return oAuth;

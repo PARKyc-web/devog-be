@@ -1,6 +1,8 @@
 package com.parkyc.devog.member.domain.entity;
 
-import com.parkyc.devog.member.domain.MemberStatus;
+import com.parkyc.devog.member.domain.code.MemberStatus;
+import com.parkyc.devog.member.exception.MemberErrorCode;
+import com.parkyc.devog.member.exception.MemberException;
 import jakarta.persistence.*;
 import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
@@ -60,6 +62,13 @@ public class Member {
             String password,
             String nickname
     ){
+        if(loginId == null || loginId.isBlank()){
+            throw new MemberException(MemberErrorCode.ERROR);
+        }
+        if(password == null || password.isBlank()){
+            throw new MemberException(MemberErrorCode.ERROR);
+        }
+
         Member member = new Member();
         member.loginId = loginId;
         member.password = password;

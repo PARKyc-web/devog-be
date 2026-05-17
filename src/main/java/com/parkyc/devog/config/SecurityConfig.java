@@ -21,7 +21,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 @Configuration
 public class SecurityConfig {
 
-    private final TestUserFilter testUserFilter;
+    private final JwtAuthFilter authFilter;
+//    private final TestUserFilter testUserFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder(){
@@ -38,36 +39,28 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
         /* 테스트용 모든 경로 오픈 및 임시계정 추가 */
-        http.csrf(csrf -> csrf.disable())
-            .formLogin(form -> form.disable())
-            .sessionManagement(session ->
-                    session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
-            .authorizeHttpRequests(auth -> auth
-                    .requestMatchers("/**").permitAll()
-                    .anyRequest().authenticated()
-            )
-            .oauth2Login(oauth ->
-                    oauth.defaultSuccessUrl("/api/lgn/oauth/callback", true))
-            .addFilterBefore(testUserFilter, UsernamePasswordAuthenticationFilter.class);
-
-//        http
-//            .csrf(csrf -> csrf.disable())
+//        http.csrf(csrf -> csrf.disable())
 //            .formLogin(form -> form.disable())
 //            .sessionManagement(session ->
-//                    session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+//                    session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
 //            .authorizeHttpRequests(auth -> auth
-//                    .requestMatchers("/page/**", "/css/**").permitAll()
-//                    .requestMatchers(
-//                            "/api/lgn/oauth/**",
-//                            "/api/lgn/web/login",
-//                            "/api/lgn/web/refresh",
-//                            "/api/lgn/app/login",
-//                            "/api/lgn/app/refresh"
-//                    ).permitAll()
-//                    .requestMatchers("/api/member/sign-up", "/api/member/check-dup-id").permitAll()
+//                    .requestMatchers("/**").permitAll()
 //                    .anyRequest().authenticated()
 //            )
-//            .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
+//            .oauth2Login(oauth ->
+//                    oauth.defaultSuccessUrl("/api/lgn/oauth/callback", true))
+//            .addFilterBefore(testUserFilter, UsernamePasswordAuthenticationFilter.class);
+
+        http
+            .csrf(csrf -> csrf.disable())
+            .formLogin(form -> form.disable())
+            .sessionManagement(session ->
+                    session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+            .authorizeHttpRequests(auth -> auth
+                    .requestMatchers(WhiteList.URLS).permitAll()
+                    .anyRequest().authenticated()
+            )
+            .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
     }

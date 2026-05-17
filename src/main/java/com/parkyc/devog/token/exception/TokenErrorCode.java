@@ -1,10 +1,11 @@
 package com.parkyc.devog.token.exception;
 
 import com.parkyc.devog.common.exception.BaseErrorCode;
+import lombok.Getter;
 import org.springframework.http.HttpStatus;
 
+@Getter
 public enum TokenErrorCode implements BaseErrorCode {
-
 
     // 토큰 파싱 에러
     ILLEGAL_ARGUMENT_TOKEN(HttpStatus.BAD_REQUEST, "잘못된 토큰 정보입니다."),
@@ -22,15 +23,5 @@ public enum TokenErrorCode implements BaseErrorCode {
     TokenErrorCode(HttpStatus status, String message){
         this.status = status;
         this.message = message;
-    }
-
-    @Override
-    public HttpStatus getStatus() {
-        return this.status;
-    }
-
-    @Override
-    public String getMessage() {
-        return this.message;
     }
 }

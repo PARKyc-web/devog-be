@@ -1,6 +1,6 @@
 package com.parkyc.devog.security;
 
-import com.parkyc.devog.member.domain.MemberStatus;
+import com.parkyc.devog.member.domain.code.MemberStatus;
 import com.parkyc.devog.member.domain.entity.Member;
 import lombok.Getter;
 import org.jspecify.annotations.Nullable;
@@ -10,7 +10,6 @@ import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.Collections;
-import java.util.List;
 
 @Getter
 public class DevogUserDetails implements UserDetails {

@@ -87,6 +87,15 @@ public class TokenProvider {
     }
 
     /**
+     * Refresh-Token을 사용해서 Access-Token 재발급
+     * @param refreshToken
+     * @return String
+     */
+    public String renewAccessToken(String refreshToken){
+        return "";
+    }
+
+    /**
      * TokenClaims를 Claims로 컨버팅 (Record to Claims)
      * @param data
      * @return Claims

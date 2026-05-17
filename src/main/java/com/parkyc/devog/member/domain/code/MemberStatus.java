@@ -1,4 +1,4 @@
-package com.parkyc.devog.member.domain;
+package com.parkyc.devog.member.domain.code;
 
 import lombok.Getter;
 
