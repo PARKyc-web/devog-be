@@ -1,7 +1,6 @@
 package com.parkyc.devog.config;
 
 import com.parkyc.devog.config.filter.JwtAuthFilter;
-import com.parkyc.devog.config.filter.TestUserFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,29 +37,19 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
 
-        /* 테스트용 모든 경로 오픈 및 임시계정 추가 */
-//        http.csrf(csrf -> csrf.disable())
-//            .formLogin(form -> form.disable())
-//            .sessionManagement(session ->
-//                    session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
-//            .authorizeHttpRequests(auth -> auth
-//                    .requestMatchers("/**").permitAll()
-//                    .anyRequest().authenticated()
-//            )
-//            .oauth2Login(oauth ->
-//                    oauth.defaultSuccessUrl("/api/lgn/oauth/callback", true))
-//            .addFilterBefore(testUserFilter, UsernamePasswordAuthenticationFilter.class);
-
         http
             .csrf(csrf -> csrf.disable())
             .formLogin(form -> form.disable())
             .sessionManagement(session ->
-                    session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                    session.sessionCreationPolicy(SessionCreationPolicy.IF_REQUIRED))
             .authorizeHttpRequests(auth -> auth
-                    .requestMatchers(WhiteList.URLS).permitAll()
+                    .requestMatchers(WHITE_LIST.URLS).permitAll()
                     .anyRequest().authenticated()
             )
-            .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class);
+            .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
+            .oauth2Login(oauth ->
+                    oauth.defaultSuccessUrl("/login/oauth/callback", true));
+
 
         return http.build();
     }

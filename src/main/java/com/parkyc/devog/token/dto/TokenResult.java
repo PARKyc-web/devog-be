@@ -3,7 +3,7 @@ package com.parkyc.devog.token.dto;
 import java.time.Instant;
 
 public record TokenResult(
-        String token,
+        String value,
         Instant expire
 ) {
 }

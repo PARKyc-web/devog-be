@@ -26,7 +26,7 @@ public record TokenClaim(
         for(String key : map.keySet()){
             Object obj = map.get(key);
 
-            if(!isAllowedType(obj)){
+                if(!isAllowedType(obj)){
                 throw new IllegalArgumentException("TokenClaim가 지원하지 않는 매개변수입니다. > " + obj);
             }
 

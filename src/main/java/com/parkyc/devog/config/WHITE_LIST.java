@@ -1,11 +1,11 @@
 package com.parkyc.devog.config;
 
-public final class WhiteList {
+public final class WHITE_LIST {
 
     public static final String[] URLS = {
             "/login/**",
             "/member/sign-up"
     };
 
-    private WhiteList(){}
+    private WHITE_LIST(){}
 }

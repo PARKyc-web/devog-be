@@ -1,6 +1,7 @@
 package com.parkyc.devog.login.controller.response;
 
 import com.parkyc.devog.login.service.result.LoginResult;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -20,16 +21,25 @@ public class LoginResponseWriter {
 
         String agent = request.getHeader(HEADER_DEVOG_AGENT);
         if(agent == null || agent.isBlank() || WEB_AGENT.equals(agent)){
-//            Cookie cookie = new Cookie("refresh-token", result.token().refreshToken());
-//            cookie.setHttpOnly(true);
-//            cookie.setSecure(true);
-//
-//            response.addCookie(cookie);
+            Cookie cookie = new Cookie("refresh-token", result.token().refreshToken().value());
+            cookie.setHttpOnly(true);
+            cookie.setSecure(true);
 
-//            return new LoginResponse(result.loginId(), result.accessToken(), null);
+            response.addCookie(cookie);
+
+            return new LoginResponse(false,
+                    false,
+                    result.loginId(),
+                    result.token().accessToken().value(),
+                    null
+            );
         }
 
-//        return new LoginResponse(result.loginId(), result.accessToken(), result.refreshToken());
-        return null;
+        return new LoginResponse(false,
+                false,
+                result.loginId(),
+                result.token().accessToken().value(),
+                result.token().refreshToken().value()
+        );
     }
 }

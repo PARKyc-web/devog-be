@@ -28,7 +28,7 @@ public class MemberOAuth {
             allocationSize = 1, initialValue = 1
     )
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "generator_oauth_id")
-    private Long oauthId;
+    private Long oAuthId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "member_id")
@@ -38,8 +38,14 @@ public class MemberOAuth {
     @Enumerated(EnumType.STRING)
     private OAuthType oAuthType;
 
-    @Column(name = "token")
-    private String token;
+    @Column(name="oauth_login_id")
+    private String oAuthLoginId;
+
+    @Column(name = "oauth_access_tokne")
+    private String accessToken;
+
+    @Column(name = "oauth_refresh_token")
+    private String refreshToken;
 
     @Column(name = "created_at")
     @CreatedDate
@@ -50,10 +56,11 @@ public class MemberOAuth {
     private LocalDateTime updatedAt;
 
     // 정적 팩토리 메소드
-    public static MemberOAuth of(OAuthType type, String token){
+    public static MemberOAuth of(OAuthType type, String accessToken, String refreshToken){
         MemberOAuth oAuth = new MemberOAuth();
         oAuth.oAuthType = type;
-        oAuth.token = token;
+        oAuth.accessToken = accessToken;
+        oAuth.refreshToken = refreshToken;
 
         return oAuth;
     }

@@ -27,7 +27,7 @@ public class TokenService {
 
         Map<String, Object> map = new HashMap<>();
         map.put("loginId", claims.loginId());
-        map.put("role", claims.role());
+        map.put("role", claims.roles());
 
         // Access Token 발급
         TokenResult aToken = provider.issueToken(
