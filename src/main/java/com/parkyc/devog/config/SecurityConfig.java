@@ -1,5 +1,6 @@
 package com.parkyc.devog.config;
 
+import com.parkyc.devog.common.OAuthSuccessHandler;
 import com.parkyc.devog.config.filter.JwtAuthFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -21,6 +22,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 public class SecurityConfig {
 
     private final JwtAuthFilter authFilter;
+    private final OAuthSuccessHandler successHandler;
 //    private final TestUserFilter testUserFilter;
 
     @Bean
@@ -47,8 +49,7 @@ public class SecurityConfig {
                     .anyRequest().authenticated()
             )
             .addFilterBefore(authFilter, UsernamePasswordAuthenticationFilter.class)
-            .oauth2Login(oauth ->
-                    oauth.defaultSuccessUrl("/login/oauth/callback", true));
+            .oauth2Login(oauth -> oauth.successHandler(successHandler));
 
 
         return http.build();

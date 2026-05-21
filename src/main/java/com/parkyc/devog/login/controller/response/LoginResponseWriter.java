@@ -23,7 +23,10 @@ public class LoginResponseWriter {
         if(agent == null || agent.isBlank() || WEB_AGENT.equals(agent)){
             Cookie cookie = new Cookie("refresh-token", result.token().refreshToken().value());
             cookie.setHttpOnly(true);
-            cookie.setSecure(true);
+            // localhost 에서 사용하기 위해서 막아둠
+            // cookie.setSecure(true);
+            cookie.setSecure(false);
+            cookie.setPath("/");
 
             response.addCookie(cookie);
 

@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
@@ -39,12 +40,20 @@ public class LoginService {
     public LoginResult login(LoginCommand command){
         // Spring Security를 사용해서 로그인 검증
         // 실패 시, new LoginException(LoginErrorCode.INVALID_LOGIN_ID)
-        Authentication auth = authManager.authenticate(
-                new UsernamePasswordAuthenticationToken(
-                        command.loginId(),
-                        command.password()
-                )
-        );
+        Authentication auth;
+        try{
+             auth = authManager.authenticate(
+                     new UsernamePasswordAuthenticationToken(
+                             command.loginId(),
+                             command.password()
+                     )
+            );
+        } catch (AuthenticationException e){
+            throw new LoginException(LoginErrorCode.INVALID_LOGIN_ID);
+        } catch (Exception e){
+            throw new LoginException(LoginErrorCode.INVALID_LOGIN_ID);
+        }
+
         DevogUserDetails detail = (DevogUserDetails) auth.getPrincipal();
         List<String> roles = detail.getAuthorities().stream()
                 .map(r -> r.getAuthority())
