@@ -56,8 +56,9 @@ public class MemberOAuth {
     private LocalDateTime updatedAt;
 
     // 정적 팩토리 메소드
-    public static MemberOAuth of(OAuthType type, String accessToken, String refreshToken){
+    public static MemberOAuth of(Member member, OAuthType type, String accessToken, String refreshToken){
         MemberOAuth oAuth = new MemberOAuth();
+        oAuth.member = member;
         oAuth.oAuthType = type;
         oAuth.accessToken = accessToken;
         oAuth.refreshToken = refreshToken;

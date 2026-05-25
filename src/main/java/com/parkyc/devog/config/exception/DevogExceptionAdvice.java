@@ -3,17 +3,20 @@ package com.parkyc.devog.config.exception;
 import com.parkyc.devog.common.exception.BaseErrorCode;
 import com.parkyc.devog.common.exception.DevogApiException;
 import com.parkyc.devog.common.response.ApiResponse;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+@Slf4j
 @RestControllerAdvice
 public class DevogExceptionAdvice {
 
     @ExceptionHandler(DevogApiException.class)
     public ResponseEntity<ApiResponse<Void>> handleDevogException(DevogApiException e){
         BaseErrorCode errorCode = e.getErrorCode();
+        log.info(errorCode.getMessage(), e);
 
         return ResponseEntity
                 .status(errorCode.getStatus())

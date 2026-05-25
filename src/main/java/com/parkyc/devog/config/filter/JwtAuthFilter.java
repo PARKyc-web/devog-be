@@ -65,6 +65,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             Authentication authentication =
                     new UsernamePasswordAuthenticationToken(
                             new DevogPrincipal(loginId, roles),null, authorities
+                            // 계정정보, 비밀번호, 권한
                     );
 
             SecurityContextHolder.getContext().setAuthentication(authentication);

@@ -7,8 +7,11 @@ import com.parkyc.devog.member.repository.MemberOAuthRepository;
 import com.parkyc.devog.member.repository.MemberRepository;
 import com.parkyc.devog.member.service.command.SignUpCommand;
 import com.parkyc.devog.member.service.result.SignUpResult;
+import com.parkyc.devog.security.DevogPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.oauth2.client.OAuth2AuthorizedClient;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

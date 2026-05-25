@@ -1,9 +1,8 @@
 package com.parkyc.devog.token.provider;
 
-import com.parkyc.devog.token.dto.LoginClaim;
+import com.parkyc.devog.token.code.TokenType;
 import com.parkyc.devog.token.dto.TokenClaim;
 import com.parkyc.devog.token.dto.TokenResult;
-import com.parkyc.devog.token.code.TokenType;
 import com.parkyc.devog.token.exception.TokenErrorCode;
 import com.parkyc.devog.token.exception.TokenException;
 import io.jsonwebtoken.*;
@@ -17,7 +16,6 @@ import javax.crypto.SecretKey;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Slf4j

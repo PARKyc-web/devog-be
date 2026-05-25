@@ -12,4 +12,5 @@ public enum OAuthType {
             throw new IllegalArgumentException("provider를 제대로 입력하세요");
         }
     }
+
 }

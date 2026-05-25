@@ -26,10 +26,6 @@ public class OAuthSuccessHandler implements AuthenticationSuccessHandler {
         String provider = auth.getAuthorizedClientRegistrationId();
 
         HttpSession session = request.getSession();
-        String purpose = (String) session.getAttribute("PURPOSE");
-
-        session.removeAttribute("PURPOSE");
-        session.removeAttribute("LOGIN_ID");
 
         if("github".equals(provider)){
             response.sendRedirect("/integration/callback/github");
