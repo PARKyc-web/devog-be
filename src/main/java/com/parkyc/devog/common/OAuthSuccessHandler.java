@@ -1,6 +1,5 @@
 package com.parkyc.devog.common;
 
-import com.parkyc.devog.member.domain.code.OAuthType;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;

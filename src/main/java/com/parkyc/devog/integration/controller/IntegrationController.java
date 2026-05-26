@@ -1,10 +1,7 @@
 package com.parkyc.devog.integration.controller;
 
 import com.parkyc.devog.integration.seervice.IntegrationService;
-import com.parkyc.devog.member.domain.code.OAuthType;
-import com.parkyc.devog.member.repository.MemberOAuthRepository;
-import com.parkyc.devog.member.repository.MemberRepository;
-import com.parkyc.devog.member.service.MemberService;
+import com.parkyc.devog.member.domain.code.OAuthProvider;
 import com.parkyc.devog.security.DevogPrincipal;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -19,6 +16,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.io.IOException;
 
 @Slf4j
 @RestController
@@ -39,17 +38,14 @@ public class IntegrationController {
                           @AuthenticationPrincipal DevogPrincipal user
     ){
 
-        OAuthType type = OAuthType.from(provider);
+        OAuthProvider type = OAuthProvider.from(provider);
 
         HttpSession session = request.getSession();
         session.setAttribute(CONNECT_PURPOSE, "CONNECT");
         session.setAttribute("PROVIDER", type);
         session.setAttribute(CONNECT_ID, user);
 
-        System.out.println("At Connect/github");
-        System.out.println("JSESSIONID :: " + session.getId());
-
-        // 나중에 OAuthType 안에 URL 넣어두기
+        // Think : OAuthProvider안에 넣는게 맞는지?
         return switch (type){
             case GITHUB -> "http://localhost:8080/oauth2/authorization/github";
             case GOOGLE -> "http://localhost:8080/oauth2/authorization/google";
@@ -57,39 +53,33 @@ public class IntegrationController {
         };
     }
 
+
+    // Think : callback 함수를 여러개 두는지 아니면 하나에서 분기처리할지 고민
     @GetMapping("/callback/github")
     public void callback(
             HttpServletRequest request,
             HttpServletResponse response,
             OAuth2AuthenticationToken token,
-            @RegisteredOAuth2AuthorizedClient("github") OAuth2AuthorizedClient client){
+            @RegisteredOAuth2AuthorizedClient("github") OAuth2AuthorizedClient client) throws IOException {
 
         HttpSession session = request.getSession(false);
-
         if(session == null){
-            System.out.println(FAIL_URL + "?reason=session_expired");
+            log.info(FAIL_URL + "?reason=session_expired");
             return;
         }
 
-        System.out.println("At Callback");
-        System.out.println("JSESSIONID :: " + session.getId());
         try{
             // OAuth 정보 및 User 정보 조회
             DevogPrincipal user = (DevogPrincipal) session.getAttribute(CONNECT_ID);
 
-            System.out.println("Session은 살아있음?");
-            System.out.println(session.getAttribute(CONNECT_PURPOSE));
-            System.out.println(user);
-
             // Token 저장
-            integrationService.connectExternalAccount(token, client, user);
+            integrationService.connectGithub(token, client, user);
 
             response.sendRedirect(SUCCESS_URL);
         } catch (Exception e){
-            log.error("error >> ", e);
-
+            log.error("Error >> ", e);
+            response.sendRedirect(FAIL_URL);
         } finally {
-            // 외부 서비스 연결 이후 세션 삭제처리
             session.invalidate();
         }
     }

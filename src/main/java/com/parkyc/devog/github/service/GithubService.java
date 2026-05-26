@@ -8,8 +8,6 @@ import org.springframework.stereotype.Service;
 @RequiredArgsConstructor
 public class GithubService {
 
-    private final MemberOAuthRepository oAuthRepository;
-
     public String loadContributes(String loginId){
 
         // login-Id 기반 AT, RT 조회

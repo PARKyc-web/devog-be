@@ -1,11 +1,10 @@
 package com.parkyc.devog.login.service;
 
-import com.parkyc.devog.common.exception.DevogApiException;
 import com.parkyc.devog.login.exception.LoginErrorCode;
 import com.parkyc.devog.login.exception.LoginException;
 import com.parkyc.devog.login.service.command.LoginCommand;
 import com.parkyc.devog.login.service.result.LoginResult;
-import com.parkyc.devog.member.domain.code.OAuthType;
+import com.parkyc.devog.member.domain.code.OAuthProvider;
 import com.parkyc.devog.member.domain.entity.MemberOAuth;
 import com.parkyc.devog.member.repository.MemberOAuthRepository;
 import com.parkyc.devog.member.repository.MemberRepository;
@@ -76,8 +75,8 @@ public class LoginService {
             // 에러코드 대충 넣어둠.
             throw new LoginException(LoginErrorCode.INVALID_LOGIN_ID);
         }
-        Optional<MemberOAuth> oauthInfo = oAuthRepository.findByOAuthTypeAndOAuthLoginId(
-                OAuthType.GITHUB, (String) attributes.get("id")
+        Optional<MemberOAuth> oauthInfo = oAuthRepository.findByOauthProviderAndOauthUserId(
+                OAuthProvider.GITHUB, (String) attributes.get("id")
         );
 
         if(oauthInfo.isEmpty()){
