@@ -1,5 +1,6 @@
 package com.parkyc.devog.integration.controller;
 
+import com.parkyc.devog.common.response.ApiResponse;
 import com.parkyc.devog.integration.seervice.IntegrationService;
 import com.parkyc.devog.member.domain.code.OAuthProvider;
 import com.parkyc.devog.security.DevogPrincipal;
@@ -33,7 +34,7 @@ public class IntegrationController {
     private final String FAIL_URL = "http://localhost:5173/integration/fail";
 
     @GetMapping("/connect/{provider}")
-    public String connect(HttpServletRequest request,
+    public ApiResponse<String> connect(HttpServletRequest request,
                           @PathVariable String provider,
                           @AuthenticationPrincipal DevogPrincipal user
     ){
@@ -47,12 +48,11 @@ public class IntegrationController {
 
         // Think : OAuthProvider안에 넣는게 맞는지?
         return switch (type){
-            case GITHUB -> "http://localhost:8080/oauth2/authorization/github";
-            case GOOGLE -> "http://localhost:8080/oauth2/authorization/google";
-            case NOTION -> "http://localhost:8080/oauth2/authorization/notion";
+            case GITHUB -> ApiResponse.ok("http://localhost:8080/oauth2/authorization/github");
+            case GOOGLE -> ApiResponse.ok("http://localhost:8080/oauth2/authorization/google");
+            case NOTION -> ApiResponse.ok("http://localhost:8080/oauth2/authorization/notion");
         };
     }
-
 
     // Think : callback 함수를 여러개 두는지 아니면 하나에서 분기처리할지 고민
     @GetMapping("/callback/github")

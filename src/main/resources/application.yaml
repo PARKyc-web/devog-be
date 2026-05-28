@@ -10,11 +10,11 @@ spring:
       enabled: false
 
   # Use Docker Postgre Database
-#  datasource:
-#    url: jdbc:postgresql://localhost:5432/postgre
-#    username: postgre
-#    password: postgre
-#    driver-class-name: org.postgresql.Driver
+  #  datasource:
+  #    url: jdbc:postgresql://localhost:5432/postgre
+  #    username: postgre
+  #    password: postgre
+  #    driver-class-name: org.postgresql.Driver
 
   # Use Local H2 Database
   datasource:
@@ -30,7 +30,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create-drop
+      ddl-auto: update
     show-sql: true
     properties:
       hibernate:

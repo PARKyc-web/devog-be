@@ -26,6 +26,7 @@ public class TokenService {
     public LoginToken issueLoginToken(LoginClaim claims){
 
         Map<String, Object> map = new HashMap<>();
+        map.put("memberId", claims.memberId());
         map.put("loginId", claims.loginId());
         map.put("role", claims.roles());
 

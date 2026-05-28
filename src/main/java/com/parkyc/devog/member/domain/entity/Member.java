@@ -44,11 +44,11 @@ public class Member {
     @Column(name="nickname")
     private String nickname;
 
-    @Column
+    @Column(name = "created_at")
     @CreatedDate
     private LocalDateTime createdAt;
 
-    @Column
+    @Column(name = "updated_at")
     @LastModifiedDate
     private LocalDateTime updatedAt;
 

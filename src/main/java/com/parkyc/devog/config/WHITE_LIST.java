@@ -5,8 +5,7 @@ public final class WHITE_LIST {
     // Spring Security 및 Filter에서 사용하기 위해서 public static final로 설정
     public static final String[] URLS = {
             "/login/**",
-            "/member/sign-up",
-            "/github/**"
+            "/member/sign-up"
             // "/integration/**"
     };
 

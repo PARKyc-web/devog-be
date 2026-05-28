@@ -52,6 +52,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if(token != null){
             TokenClaim claim = tokenProvider.verifyToken(token);
 
+            Long memberId = (Long) claim.map().get("memberId");
             String loginId = (String) claim.map().get("loginId");
             List<String> roles = (List<String>) claim.map().getOrDefault("roles", List.of());
 
@@ -64,7 +65,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
             Authentication authentication =
                     new UsernamePasswordAuthenticationToken(
-                            new DevogPrincipal(loginId, roles),null, authorities
+                            new DevogPrincipal(memberId, loginId, roles),null, authorities
                             // 계정정보, 비밀번호, 권한
                     );
 

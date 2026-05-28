@@ -15,6 +15,7 @@ public class GithubQuery {
     private Map<String, Object> variables;
 
     public static GithubQuery from(GithubApiProperty query, Map<String, Object> variables){
+        query.validVariables(variables);
         GithubQuery githubQuery = new GithubQuery();
 
         githubQuery.query = query.getQuery();

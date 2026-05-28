@@ -14,6 +14,7 @@ import java.util.Collections;
 @Getter
 public class DevogUserDetails implements UserDetails {
 
+    private final Long memberId;
     private final String loginId;
     private final String password;
     private final String nickname;
@@ -21,6 +22,7 @@ public class DevogUserDetails implements UserDetails {
     private final Collection<? extends GrantedAuthority> authorities;
 
     public DevogUserDetails(){
+        this.memberId = 0L;
         this.loginId = "TEST-USER";
         this.password = "TEST-PASSWORD";
         this.nickname = "TEST-USER";
@@ -29,6 +31,7 @@ public class DevogUserDetails implements UserDetails {
     }
 
     public DevogUserDetails(Member member){
+        this.memberId = member.getMemberId();
         this.loginId = member.getLoginId();
         this.password = member.getPassword();
         this.nickname = member.getNickname();

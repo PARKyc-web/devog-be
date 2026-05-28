@@ -59,7 +59,7 @@ public class LoginService {
                 .toList();
 
         LoginToken token = tokenService.issueLoginToken(
-                new LoginClaim(detail.getLoginId(), roles)
+                new LoginClaim(detail.getMemberId(), detail.getLoginId(), roles)
         );
 
         return new LoginResult(detail.getLoginId(), token);
