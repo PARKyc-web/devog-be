@@ -52,7 +52,8 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         if(token != null){
             TokenClaim claim = tokenProvider.verifyToken(token);
 
-            Long memberId = (Long) claim.map().get("memberId");
+            Number number = (Number) claim.map().get("memberId");
+            Long memberId = number.longValue();
             String loginId = (String) claim.map().get("loginId");
             List<String> roles = (List<String>) claim.map().getOrDefault("roles", List.of());
 

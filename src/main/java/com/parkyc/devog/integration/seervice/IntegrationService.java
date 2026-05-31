@@ -2,6 +2,7 @@ package com.parkyc.devog.integration.seervice;
 
 import com.parkyc.devog.common.exception.DevogApiException;
 import com.parkyc.devog.common.exception.DevogErrorCode;
+import com.parkyc.devog.integration.exception.IntegrationErrorCode;
 import com.parkyc.devog.member.domain.code.OAuthProvider;
 import com.parkyc.devog.member.domain.entity.Member;
 import com.parkyc.devog.member.domain.entity.MemberOAuth;
@@ -30,8 +31,18 @@ public class IntegrationService {
 
         Optional<Member> member = memberRepository.findByLoginId(user.loginId());
         if(member.isEmpty()){
+            // 회원정보가 없는 유저입니다.
             throw new DevogApiException(DevogErrorCode.BUSINESS_ERROR);
-            // 나중에 통합연계 관련 에러코드로 수정할 것.
+        }
+
+        MemberOAuth oauth = member.get().getOauths().stream()
+                .filter(o -> o.getOauthProvider() == OAuthProvider.GITHUB)
+                .findFirst()
+                .orElse(null);
+
+        if(oauth != null){
+            // 이미 연동된 유저입니다.
+            throw new DevogApiException(IntegrationErrorCode.INTEGRATION_ERROR);
         }
 
         String provider = token.getAuthorizedClientRegistrationId();
