@@ -15,7 +15,13 @@ import java.time.LocalDateTime;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "activity")
+@Table(
+        name = "activity",
+        uniqueConstraints = @UniqueConstraint(
+                name = "uk_activity_member_source_external",
+                columnNames = {"member_id", "source", "external_id"}
+        )
+)
 public class Activity {
 
     @Id
@@ -39,6 +45,21 @@ public class Activity {
     @Column(name = "action_time")
     private LocalDate actionTime;
 
+    @Column(name = "external_id")
+    private String externalId;
+
+    @Column(name = "external_url")
+    private String externalUrl;
+
+    @Column(name = "repository_owner")
+    private String repositoryOwner;
+
+    @Column(name = "repository_name")
+    private String repositoryName;
+
+    @Column(name = "title")
+    private String title;
+
     @Column(name = "created_at")
     @CreatedDate
     private LocalDateTime createdAt;
@@ -47,9 +68,24 @@ public class Activity {
     @LastModifiedDate
     private LocalDateTime updatedAt;
 
-    public static Activity from(){
+    public static Activity githubCommit(Long memberId,
+                                        String repositoryOwner,
+                                        String repositoryName,
+                                        String commitSha,
+                                        String commitUrl,
+                                        String title,
+                                        LocalDate actionTime) {
         Activity activity = new Activity();
 
+        activity.memberId = memberId;
+        activity.source = "GITHUB";
+        activity.action = "COMMIT";
+        activity.externalId = commitSha;
+        activity.externalUrl = commitUrl;
+        activity.repositoryOwner = repositoryOwner;
+        activity.repositoryName = repositoryName;
+        activity.title = title;
+        activity.actionTime = actionTime;
 
         return activity;
     }

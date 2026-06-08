@@ -8,6 +8,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestClient;
 import tools.jackson.databind.JsonNode;
 
+import java.net.URI;
 import java.util.Map;
 
 @Slf4j
@@ -32,6 +33,23 @@ public class GithubClient {
                 .body(query)
                 .retrieve()
                 .body(JsonNode.class);
+    }
+
+    public <T> T graphql(GithubQuery query, String key, Class<T> responseType) {
+        return client.post()
+                .uri("/graphql")
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + key)
+                .body(query)
+                .retrieve()
+                .body(responseType);
+    }
+
+    public <T> T get(URI uri, String key, Class<T> responseType) {
+        return client.get()
+                .uri(uri)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + key)
+                .retrieve()
+                .body(responseType);
     }
 
 }

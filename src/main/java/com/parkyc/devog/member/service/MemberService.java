@@ -1,6 +1,10 @@
 package com.parkyc.devog.member.service;
 
+import com.parkyc.devog.common.exception.DevogApiException;
+import com.parkyc.devog.common.exception.DevogErrorCode;
+import com.parkyc.devog.member.domain.code.OAuthProvider;
 import com.parkyc.devog.member.domain.entity.Member;
+import com.parkyc.devog.member.domain.entity.MemberOAuth;
 import com.parkyc.devog.member.exception.MemberErrorCode;
 import com.parkyc.devog.member.exception.MemberException;
 import com.parkyc.devog.member.repository.MemberRepository;
@@ -10,6 +14,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -42,13 +49,18 @@ public class MemberService {
         );
     }
 
-    // 비밀번호 변경 메소드
-    public void changePassword(){
+    public MemberOAuth getOAuthInfo(String loginId, OAuthProvider provider){
+        Optional<Member> oMember = memberRepository.findByLoginId(loginId);
+        if(oMember.isEmpty()){
+            // Think : 에러코드 정리하기.
+            throw new DevogApiException(DevogErrorCode.BUSINESS_ERROR);
+        }
+        Member member = oMember.get();
+        List<MemberOAuth> oauthList = member.getOauths();
 
-    }
-
-    // 닉네임 변경 메소드
-    public void changeNickname(){
-
+        return oauthList.stream()
+                .filter(o -> o.getOauthProvider() == provider)
+                .findFirst()
+                .orElseThrow(() -> new DevogApiException(DevogErrorCode.BUSINESS_ERROR));
     }
 }

@@ -11,4 +11,6 @@ public interface ActivityRepository extends JpaRepository<Activity, Long> {
     List<Activity> findAllByMemberIdAndActionTime(Long memberId, LocalDateTime actionTime);
 
     List<Activity> findAllBymemberIdAndActionTimeBetween(Long memberId, LocalDate actionTimeAfter, LocalDate actionTimeBefore);
+
+    boolean existsByMemberIdAndSourceAndExternalId(Long memberId, String source, String externalId);
 }

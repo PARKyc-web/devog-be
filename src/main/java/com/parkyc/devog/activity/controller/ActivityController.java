@@ -27,4 +27,5 @@ public class ActivityController {
 
         return ApiResponse.ok("ACTIVITY - RESPONSE");
     }
+
 }

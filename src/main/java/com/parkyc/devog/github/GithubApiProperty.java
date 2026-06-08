@@ -13,9 +13,30 @@ import java.util.Set;
 public enum GithubApiProperty {
 
     CONTRIBUTE("""
-            query($login: String!, $from: DateTime!, $to: DateTime!) { user(login: $login) { contributionsCollection(from: $from, to: $to) { contributionCalendar { totalContributions weeks { contributionDays { date contributionCount color } } } } } }
+            query($login: String!, $from: DateTime!, $to: DateTime!) {
+                user(login: $login) {
+                    contributionsCollection(from: $from, to: $to) {
+                        commitContributionsByRepository(maxRepositories: 100) {
+                            repository {
+                                name
+                                owner {
+                                    login
+                                }
+                                url
+                            }
+                            contributions(first: 100) {
+                                nodes {
+                                    occurredAt
+                                    commitCount
+                                }
+                            }
+                        }
+                    }
+                }
+            }
             """,
-            Set.of("login", "from", "to"));
+            Set.of("login", "from", "to")
+    );
 
     private final String query;
     private final Set<String> required;
