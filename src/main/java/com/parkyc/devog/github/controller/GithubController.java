@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.time.YearMonth;
+import java.util.List;
 
 @RestController
 @RequestMapping("/github")
@@ -22,7 +23,7 @@ public class GithubController {
     // Think : Github, notion, google 등 패키지 구조 생각하기
     // Think : GithubController 는 확인용으로 만든것으로, Service만 있으면 될 것 같음 -> 다른 기능에서 사용
     @GetMapping("/contribute")
-    public GithubActivityResult getContribute(@AuthenticationPrincipal DevogPrincipal user){
+    public List<GithubActivityResult> getContribute(@AuthenticationPrincipal DevogPrincipal user){
         ContributesCommand command = new ContributesCommand(user.loginId(), YearMonth.of(2026, 5));
 
         return githubService.loadGithubActivity(command);
