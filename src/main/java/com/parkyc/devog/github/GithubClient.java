@@ -51,5 +51,12 @@ public class GithubClient {
                 .retrieve()
                 .body(responseType);
     }
+    public <T> T get(String uri, String key, Class<T> responseType) {
+        return client.get()
+                .uri(uri)
+                .header(HttpHeaders.AUTHORIZATION, "Bearer " + key)
+                .retrieve()
+                .body(responseType);
+    }
 
 }

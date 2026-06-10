@@ -1,9 +1,5 @@
 package com.parkyc.devog.github.service;
 
-import com.parkyc.devog.activity.repository.ActivityRepository;
-import com.parkyc.devog.common.exception.BaseErrorCode;
-import com.parkyc.devog.common.exception.DevogApiException;
-import com.parkyc.devog.common.exception.DevogErrorCode;
 import com.parkyc.devog.github.GithubApiProperty;
 import com.parkyc.devog.github.GithubClient;
 import com.parkyc.devog.github.GithubQuery;
@@ -13,25 +9,17 @@ import com.parkyc.devog.github.service.dto.ContributeApiResponse;
 import com.parkyc.devog.github.service.dto.ParsedContribute;
 import com.parkyc.devog.github.service.result.GithubActivityResult;
 import com.parkyc.devog.member.domain.code.OAuthProvider;
-import com.parkyc.devog.member.domain.entity.Member;
 import com.parkyc.devog.member.domain.entity.MemberOAuth;
-import com.parkyc.devog.member.repository.MemberRepository;
 import com.parkyc.devog.member.service.MemberService;
-import com.parkyc.devog.security.DevogPrincipal;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
+import java.time.*;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Optional;
 
 @Slf4j
 @Service
@@ -56,8 +44,7 @@ public class GithubService {
         ContributeApiResponse apiResponse = fetchContributes(command, oauth);
         List<ParsedContribute> commitSummary = parseContributes(apiResponse);
 
-        List<CommitApiResponse> commitResponse = fetchCommitList(commitSummary, oauth);
-        // 요일별 commits를 가져온다. 최대 31번 x
+        List<CommitApiResponse> commitResponse = fetchCommitList(commitSummary, command, oauth);
 
         return parseCommitList(commitResponse);
     }
@@ -89,8 +76,9 @@ public class GithubService {
 
         return response;
     }
+
     private List<ParsedContribute> parseContributes(ContributeApiResponse apiResponse){
-        HashMap<String, ParsedContribute> parsedContributes = new HashMap<>();
+        HashMap<String, ParsedContribute> contributeMap = new HashMap<>();
 
         for (ContributeApiResponse.CommitContributionsByRepository contribution
                 : apiResponse.data().user().contributionsCollection().commitContributionsByRepository()) {
@@ -99,27 +87,48 @@ public class GithubService {
             String key = owner + "/" + repository;
 
             for (ContributeApiResponse.Node node : contribution.contributions().nodes()) {
-                ParsedContribute parsedContribute = parsedContributes.get(key);
-                long commitCount = node.commitCount().longValue();
+                ParsedContribute parsedContribute = contributeMap.get(key);
+                int commitCount = node.commitCount();
 
                 if (parsedContribute != null) {
                     commitCount += parsedContribute.commitCount();
                 }
 
-                parsedContributes.put(key, new ParsedContribute(repository, owner, commitCount));
+                contributeMap.put(key, new ParsedContribute(repository, owner, commitCount));
             }
         }
 
-        return new ArrayList<>(parsedContributes.values());
+        return new ArrayList<>(contributeMap.values());
     }
+
     private List<CommitApiResponse> fetchCommitList(List<ParsedContribute> parsedContributes,
+                                                    ContributesCommand command,
                                                     MemberOAuth oauth){
-        String url = "/repo/owner/repo/commits";
-        // CommitApiResponse apiResponse = client.get(url, oauth.getAccessToken(), CommitApiResponse.class);
+        String since = LocalDateTime.of(
+                command.yearMonth().atDay(1), LocalTime.MIN)
+                .atOffset(ZoneOffset.UTC)
+                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX"));
 
+        String until = LocalDateTime.of(
+                command.yearMonth().atEndOfMonth(), LocalTime.MAX)
+                .atOffset(ZoneOffset.UTC)
+                .format(DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssXXX"));
 
-        return null;
+        List<CommitApiResponse> result = new ArrayList<>();
+
+        for(ParsedContribute data : parsedContributes){
+            String url = String.format(
+                    "/repos/%s/%s/commits?since=%s&until=%s&per_page=100",
+                    data.owner(), data.repository(), since, until
+            );
+            CommitApiResponse[] apiResponse = client.get(url, oauth.getAccessToken(), CommitApiResponse[].class);
+
+            result.addAll(List.of(apiResponse));
+        }
+
+        return result;
     }
+
     private List<GithubActivityResult> parseCommitList(List<CommitApiResponse> commitApiResponses){
 
 
