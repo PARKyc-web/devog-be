@@ -3,6 +3,7 @@ package com.parkyc.devog.activity.controller;
 import com.parkyc.devog.activity.controller.request.ActivitySearchRequest;
 import com.parkyc.devog.activity.service.ActivityService;
 import com.parkyc.devog.common.response.ApiResponse;
+import com.parkyc.devog.github.service.result.GithubActivityResult;
 import com.parkyc.devog.security.DevogPrincipal;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -10,6 +11,8 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @Slf4j
 @RestController
@@ -23,9 +26,13 @@ public class ActivityController {
     public ApiResponse<String> totalActivity(ActivitySearchRequest search,
                                              @AuthenticationPrincipal DevogPrincipal user){
 
-
-
         return ApiResponse.ok("ACTIVITY - RESPONSE");
+    }
+
+    @GetMapping("/test")
+    public ApiResponse<List<GithubActivityResult>> test(){
+
+        return ApiResponse.ok(activityService.test());
     }
 
 }

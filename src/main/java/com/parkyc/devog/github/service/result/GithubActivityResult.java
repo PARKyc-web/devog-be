@@ -1,8 +1,5 @@
 package com.parkyc.devog.github.service.result;
 
-import com.parkyc.devog.github.service.dto.ContributeApiResponse;
-
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public record GithubActivityResult (
@@ -12,10 +9,4 @@ public record GithubActivityResult (
     String owner,
     LocalDateTime commitDate
 ) {
-
-    public record CommitFiles(
-        String name,
-        int add,
-        int remove
-    ){ }
 }

@@ -49,6 +49,34 @@ public class GithubService {
         return parseCommitList(commitResponse);
     }
 
+    /**
+     * Raw response:
+     * {
+     *   "data": {
+     *     "user": {
+     *       "contributionsCollection": {
+     *         "commitContributionsByRepository": [
+     *           {
+     *             "repository": {
+     *               "name": "repository",
+     *               "owner": { "login": "owner" },
+     *               "url": "https://github.com/owner/repository"
+     *             },
+     *             "contributions": {
+     *               "nodes": [
+     *                 {
+     *                   "occurredAt": "2026-06-01T00:00:00Z",
+     *                   "commitCount": 1
+     *                 }
+     *               ]
+     *             }
+     *           }
+     *         ]
+     *       }
+     *     }
+     *   }
+     * }
+     */
     private ContributeApiResponse fetchContributes(ContributesCommand command, MemberOAuth oauth){
         String from = LocalDateTime.of(
                 command.yearMonth().atDay(1),
@@ -101,6 +129,34 @@ public class GithubService {
         return new ArrayList<>(contributeMap.values());
     }
 
+    /**
+     * Raw response:
+     * [
+     *   {
+     *     "sha": "commit-sha",
+     *     "html_url": "https://github.com/owner/repository/commit/commit-sha",
+     *     "commit": {
+     *       "message": "commit message",
+     *       "author": {
+     *         "name": "author",
+     *         "email": "author@example.com",
+     *         "date": "2026-06-01T12:00:00Z"
+     *       },
+     *       "committer": {
+     *         "name": "committer",
+     *         "email": "committer@example.com",
+     *         "date": "2026-06-01T12:00:00Z"
+     *       }
+     *     },
+     *     "author": {
+     *       "login": "github-login"
+     *     },
+     *     "parents": [
+     *       { "sha": "parent-sha" }
+     *     ]
+     *   }
+     * ]
+     */
     private List<CommitApiResponse> fetchCommitList(List<ParsedContribute> parsedContributes,
                                                     ContributesCommand command,
                                                     MemberOAuth oauth){
@@ -118,21 +174,48 @@ public class GithubService {
 
         for(ParsedContribute data : parsedContributes){
             String url = String.format(
-                    "/repos/%s/%s/commits?since=%s&until=%s&per_page=100",
-                    data.owner(), data.repository(), since, until
+                    "/repos/%s/%s/commits?author=%s&since=%s&until=%s&per_page=100",
+                    data.owner(), data.repository(), oauth.getOauthUserName(), since, until
             );
-            CommitApiResponse[] apiResponse = client.get(url, oauth.getAccessToken(), CommitApiResponse[].class);
+            tools.jackson.databind.JsonNode apiResponse = client.get(
+                    url,
+                    oauth.getAccessToken(),
+                    tools.jackson.databind.JsonNode.class
+            );
 
-            result.addAll(List.of(apiResponse));
+            for (tools.jackson.databind.JsonNode commitNode : apiResponse) {
+                tools.jackson.databind.JsonNode commit = commitNode.get("commit");
+                tools.jackson.databind.JsonNode author = commit.get("author");
+                String sha = commitNode.get("sha").asText();
+
+                result.add(new CommitApiResponse(
+                        sha,
+                        commit.get("message").asText(),
+                        author.get("name").asText(),
+                        OffsetDateTime.parse(author.get("date").asText()).toLocalDateTime(),
+                        data.repository(),
+                        data.owner()
+                ));
+            }
         }
 
         return result;
     }
 
     private List<GithubActivityResult> parseCommitList(List<CommitApiResponse> commitApiResponses){
+        List<GithubActivityResult> results = new ArrayList<>();
 
+        for (CommitApiResponse commitApiResponse : commitApiResponses) {
+            results.add(new GithubActivityResult(
+                    commitApiResponse.sha(),
+                    commitApiResponse.message(),
+                    commitApiResponse.repository(),
+                    commitApiResponse.owner(),
+                    commitApiResponse.date()
+            ));
+        }
 
-        return null;
+        return results;
     }
 }
 

@@ -9,7 +9,6 @@ import org.springframework.data.annotation.LastModifiedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 
 @Getter
@@ -40,10 +39,6 @@ public class GithubActivity {
 
     @Column(name = "activity_at")
     private LocalDateTime activityAt;
-
-    @OneToMany(mappedBy = "activity", fetch = FetchType.LAZY,
-               cascade = CascadeType.ALL, orphanRemoval = false)
-    private List<GithubActivityFiles> files;
 
     @CreatedDate
     @Column(name = "created_at")

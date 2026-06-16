@@ -1,14 +1,13 @@
 package com.parkyc.devog.github.service.dto;
 
-import java.util.List;
+import java.time.LocalDateTime;
 
 public record CommitApiResponse(
-        String sha
+        String sha,
+        String message,
+        String author,
+        LocalDateTime date,
+        String repository,
+        String owner
 ) {
-
-    public record CommitFile(
-            String name,
-            int add,
-            int remove
-    ){}
 }
